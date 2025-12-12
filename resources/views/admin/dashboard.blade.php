@@ -1,3 +1,6 @@
+@php
+    use Carbon\Carbon;
+@endphp
 <x-dashboard-layout>
     <x-slot name="title">SIPER - Dashboard Bapendik</x-slot>
     <x-slot name="profileLabel">Bapendik</x-slot>
@@ -123,7 +126,17 @@
                 ];
             })->toArray()) !!};
 
-            let arsipData = [];
+            let arsipData = {!! json_encode($archives->map(function($a) {
+                return [
+                    'arsip_id' => $a->peminjaman_id,
+                    'nama' => $a->user->nama_user,
+                    'email' => $a->user->email,
+                    'ruangan' => $a->ruangan->nama_ruang,
+                    'keperluan' => $a->tujuan,
+                    'tanggal' => \Carbon\Carbon::parse($a->tanggal_peminjaman)->format('d M Y'),
+                    'status' => $a->status
+                ];
+            })->toArray()) !!};
 
             let selectedPeminjaman = null;
 

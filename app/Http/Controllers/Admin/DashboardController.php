@@ -11,12 +11,21 @@ class DashboardController extends Controller
     public function index()
     {
         // Ambil peminjaman yang perlu approval Bapendik
-        // Status: pending atau untuk kelas pengganti
         $peminjamans = Peminjaman::whereIn('status', ['pending', 'diajukan'])
             ->with(['user', 'ruangan.gedung', 'details'])
             ->latest()
             ->get();
-        
-        return view('admin.dashboard', compact('peminjamans'));
+
+        // Ambil arsip peminjaman
+        $archives = Peminjaman::whereIn('status', [
+            'disetujui bapendik',
+            'ditolak bapendik',
+            'disetujui' // status final untuk Kuliah Pengganti
+        ])
+            ->with(['user', 'ruangan.gedung'])
+            ->latest()
+            ->get();
+
+        return view('admin.dashboard', compact('peminjamans', 'archives'));
     }
 }

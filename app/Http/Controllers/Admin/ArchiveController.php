@@ -8,19 +8,23 @@ use Illuminate\Http\Request;
 
 class ArchiveController extends Controller
 {
-    public function index()
+    public function dashboard()
     {
-        // Ambil peminjaman yang sudah diproses (approved atau rejected)
+        $peminjamans = Peminjaman::where('status', 'pending')
+            ->with(['user', 'ruangan.gedung', 'details'])
+            ->latest()
+            ->get();
+        
+        // Tambahkan ini untuk data arsip
         $archives = Peminjaman::whereIn('status', [
                 'disetujui bapendik',
-                'disetujui subkoor',
                 'ditolak bapendik',
-                'ditolak subkoor'
+                'disetujui' // status final untuk Kuliah Pengganti
             ])
             ->with(['user', 'ruangan.gedung'])
             ->latest()
             ->get();
         
-        return view('admin.archive', compact('archives'));
+        return view('admin.dashboard', compact('peminjamans', 'archives'));
     }
 }

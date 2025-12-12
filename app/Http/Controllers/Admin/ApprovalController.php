@@ -30,30 +30,48 @@ class ApprovalController extends Controller
     public function approve($id)
     {
         try {
-            $peminjaman = Peminjaman::findOrFail($id);
+            // Eager load relasi ruangan dan user agar bisa diakses
+            $peminjaman = Peminjaman::with(['ruangan', 'user'])->findOrFail($id);
             
-            // Update status menjadi disetujui bapendik
-            $peminjaman->update([
-                'status' => 'disetujui bapendik'
-            ]);
+            // Cek apakah tujuan adalah "Kuliah_Pengganti" (case insensitive, tanpa spasi/underscore)
+            $tujuan = strtolower(str_replace(['_', ' '], '', trim($peminjaman->tujuan)));
             
-            // Kirim notifikasi ke peminjam
-            Notifikasi::create([
-                'peminjaman_id' => $peminjaman->peminjaman_id,
-                'user_id' => $peminjaman->user_id,
-                'pesan' => 'Peminjaman ruangan ' . $peminjaman->ruangan->nama_ruang . ' telah disetujui oleh Bapendik. Menunggu persetujuan dari Subkoor.',
-                'status_baca' => 'unread'
-            ]);
-            
-            // Kirim notifikasi ke semua Subkoor (role_id = 4)
-            $subkoorUsers = \App\Models\User::where('role_id', 4)->get();
-            foreach ($subkoorUsers as $subkoor) {
+            if ($tujuan === 'kuliahpengganti') {
+                // Finalisasi di Bapendik, tidak perlu ke Subkoor
+                $peminjaman->update([
+                    'status' => 'disetujui' // Status final untuk Kuliah Pengganti
+                ]);
+                
                 Notifikasi::create([
                     'peminjaman_id' => $peminjaman->peminjaman_id,
-                    'user_id' => $subkoor->user_id,
-                    'pesan' => 'Peminjaman ruangan ' . $peminjaman->ruangan->nama_ruang . ' oleh ' . $peminjaman->user->nama_user . ' telah disetujui Bapendik. Mohon review dan setujui.',
+                    'user_id' => $peminjaman->user_id,
+                    'pesan' => 'Peminjaman ruangan ' . ($peminjaman->ruangan->nama_ruang ?? '-') . ' untuk Kuliah Pengganti telah disetujui dan final oleh Bapendik.',
                     'status_baca' => 'unread'
                 ]);
+                
+            } else {
+                // Proses normal, lanjut ke Subkoor
+                $peminjaman->update([
+                    'status' => 'disetujui bapendik'
+                ]);
+                
+                Notifikasi::create([
+                    'peminjaman_id' => $peminjaman->peminjaman_id,
+                    'user_id' => $peminjaman->user_id,
+                    'pesan' => 'Peminjaman ruangan ' . ($peminjaman->ruangan->nama_ruang ?? '-') . ' telah disetujui oleh Bapendik. Menunggu persetujuan dari Subkoor.',
+                    'status_baca' => 'unread'
+                ]);
+                
+                // Kirim notifikasi ke semua Subkoor (role_id = 4)
+                $subkoorUsers = \App\Models\User::where('role_id', 4)->get();
+                foreach ($subkoorUsers as $subkoor) {
+                    Notifikasi::create([
+                        'peminjaman_id' => $peminjaman->peminjaman_id,
+                        'user_id' => $subkoor->user_id,
+                        'pesan' => 'Peminjaman ruangan ' . ($peminjaman->ruangan->nama_ruang ?? '-') . ' oleh ' . ($peminjaman->user->nama_user ?? '-') . ' telah disetujui Bapendik. Mohon review dan setujui.',
+                        'status_baca' => 'unread'
+                    ]);
+                }
             }
             
             // Selalu return JSON untuk POST request

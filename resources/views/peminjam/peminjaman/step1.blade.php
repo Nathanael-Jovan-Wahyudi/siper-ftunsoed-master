@@ -241,7 +241,7 @@
                     <option value="Workshop" {{ old('tujuan') == 'Workshop' ? 'selected' : '' }}>Workshop</option>
                     <option value="Rapat" {{ old('tujuan') == 'Rapat' ? 'selected' : '' }}>Rapat</option>
                     <option value="Seminar" {{ old('tujuan') == 'Seminar' ? 'selected' : '' }}>Seminar</option>
-                    <option value="Kuliah Pengganti" {{ old('tujuan') == 'Kuliah Pengganti' ? 'selected' : '' }}>Kuliah Pengganti</option>
+                    <option value="Kuliah_Pengganti" {{ old('tujuan') == 'Kuliah Pengganti' ? 'selected' : '' }}>Kuliah Pengganti</option>
                     <option value="Lainnya" {{ old('tujuan') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
                 </select>
             </div>
