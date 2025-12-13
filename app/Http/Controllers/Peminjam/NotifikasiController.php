@@ -9,7 +9,9 @@ class NotifikasiController extends Controller
 {
     public function index()
     {
-        // TODO: Ambil notifikasi berdasarkan user login
-        return view('peminjam.notifikasi.index');
+        $notifikasis = \App\Models\Notifikasi::where('user_id', \Auth::id())
+            ->orderBy('waktu_kirim', 'desc')
+            ->get();
+        return view('peminjam.notifikasi.index', compact('notifikasis'));
     }
 }
