@@ -45,7 +45,24 @@ class PeminjamanController extends Controller
             $dokumenPath = $request->file('dokumen_pendukung')->store('dokumen_peminjaman', 'public');
         }
 
-        // Simpan data peminjaman
+        // Cek apakah sudah ada draft aktif untuk user, ruangan, tanggal yang sama
+        $existingDraft = Peminjaman::where('user_id', Auth::id())
+            ->where('ruang_id', $validated['ruang_id'])
+            ->where('tanggal_peminjaman', $validated['tanggal_peminjaman'])
+            ->where('tanggal_selesai', $validated['tanggal_selesai'])
+            ->where('jam_mulai', $validated['jam_mulai'])
+            ->where('jam_selesai', $validated['jam_selesai'])
+            ->where('status', 'draft')
+            ->first();
+
+        if ($existingDraft) {
+            // Jika sudah ada draft, redirect ke step 2 draft tersebut
+            return redirect()
+                ->route('peminjam.ajuan.step2', $existingDraft->peminjaman_id)
+                ->with('success', 'Draft peminjaman sudah ada. Silakan lanjutkan detail per hari.');
+        }
+
+        // Simpan data peminjaman baru
         $peminjaman = Peminjaman::create([
             'user_id' => Auth::id(),
             'ruang_id' => $validated['ruang_id'],
@@ -57,8 +74,8 @@ class PeminjamanController extends Controller
             'tujuan' => $validated['tujuan'],
             'detail_kegiatan' => $validated['detail_kegiatan'],
             'dokumen_pendukung' => $dokumenPath,
-            'status' => 'draft', // Status awal masih draft
-            'notes' => null,  // ✅ Tambahkan ini! 
+            'status' => 'draft',
+            'notes' => null,
         ]);
 
         return redirect()
