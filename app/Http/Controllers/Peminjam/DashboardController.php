@@ -12,16 +12,18 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Ambil semua gedung untuk ditampilkan di dashboard
-        $gedungs = \App\Models\Gedung::orderBy('nama_gedung')->get();
-
-        // Ambil peminjaman user yang login
-        $peminjamans = Peminjaman::where('user_id', Auth::id())
-            ->with(['ruangan.gedung', 'details'])
-            ->latest()
-            ->take(10)
+        // Semua ruangan yang sedang dipinjam/di-ACC (untuk tab "Ruangan Dipinjam")
+        $ruanganDipinjam = Peminjaman::with(['ruangan.gedung', 'details'])
+            ->whereIn('status', ['disetujui subkoor', 'disetujui bapendik', 'dipinjam'])
+            ->orderBy('tanggal_peminjaman', 'asc')
             ->get();
 
-        return view('peminjam.dashboard', compact('gedungs', 'peminjamans'));
+        // Riwayat peminjaman milik user login (untuk tab "Riwayat Pinjaman")
+        $riwayatPeminjaman = Peminjaman::with(['ruangan.gedung', 'details'])
+            ->where('user_id', Auth::id())
+            ->orderByDesc('tanggal_peminjaman')
+            ->get();
+
+        return view('peminjam.dashboard', compact('ruanganDipinjam', 'riwayatPeminjaman'));
     }
 }
