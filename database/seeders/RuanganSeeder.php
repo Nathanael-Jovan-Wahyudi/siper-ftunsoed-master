@@ -36,6 +36,26 @@ class RuanganSeeder extends Seeder
             }
         }
 
+        // Tambahan ruangan khusus
+        $ruangs[] = [
+            'nama_ruang' => 'Aula Gedung F',
+            'kapasitas' => 200,
+            'tipe_ruang' => 'Aula',
+            'gedung_id' => 6, // Aula F
+        ];
+        $ruangs[] = [
+            'nama_ruang' => 'Lapangan Gedung C',
+            'kapasitas' => 150,
+            'tipe_ruang' => 'Lapangan',
+            'gedung_id' => 7, // Lapangan Basket
+        ];
+        $ruangs[] = [
+            'nama_ruang' => 'Masjid Teknik',
+            'kapasitas' => 100,
+            'tipe_ruang' => 'Masjid',
+            'gedung_id' => 8, // Masjid Teknik
+        ];
+
         Ruangan::insert($ruangs);
     }
 }
