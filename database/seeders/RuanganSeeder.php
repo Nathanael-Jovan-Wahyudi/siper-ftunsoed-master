@@ -13,38 +13,28 @@ class RuanganSeeder extends Seeder
      */
     public function run(): void
     {
-         $ruangs = [
-            [
-                'nama_ruang' => 'A201',
-                'kapasitas' => 50,
-                'tipe_ruang' => 'Kelas',
-                'gedung_id' => 1, 
-            ],
-            [
-                'nama_ruang' => 'A202',
-                'kapasitas' => 50,
-                'tipe_ruang' => 'Kelas',
-                'gedung_id' => 1,
-            ],
-            [
-                'nama_ruang' => 'A203',
-                'kapasitas' => 50,
-                'tipe_ruang' => 'Kelas',
-                'gedung_id' => 1,
-            ],
-            [
-                'nama_ruang' => 'A204',
-                'kapasitas' => 50,
-                'tipe_ruang' => 'Kelas',
-                'gedung_id' => 1,
-            ],
-            [
-                'nama_ruang' => 'A205',
-                'kapasitas' => 50,
-                'tipe_ruang' => 'Kelas',
-                'gedung_id' => 1,
-            ],
+        $gedungs = [
+            ['kode' => 'A', 'gedung_id' => 1, 'lantai' => 2],
+            ['kode' => 'C', 'gedung_id' => 2, 'lantai' => 2],
+            ['kode' => 'D', 'gedung_id' => 3, 'lantai' => 2],
+            ['kode' => 'E', 'gedung_id' => 4, 'lantai' => 3], // E: 3 lantai
+            ['kode' => 'F', 'gedung_id' => 5, 'lantai' => 2],
         ];
+
+        $ruangs = [];
+        foreach ($gedungs as $gedung) {
+            for ($lantai = 1; $lantai <= $gedung['lantai']; $lantai++) {
+                for ($no = 1; $no <= 5; $no++) {
+                    $kode = $gedung['kode'] . $lantai . sprintf('%02d', $no);
+                    $ruangs[] = [
+                        'nama_ruang' => $kode,
+                        'kapasitas' => 50,
+                        'tipe_ruang' => 'Kelas',
+                        'gedung_id' => $gedung['gedung_id'],
+                    ];
+                }
+            }
+        }
 
         Ruangan::insert($ruangs);
     }

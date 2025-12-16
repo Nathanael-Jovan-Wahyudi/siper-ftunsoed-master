@@ -49,7 +49,23 @@
     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 24px; margin-bottom: 40px;">
         @forelse($gedungs as $gedung)
             <div class="gedung-card" style="background: white; border-radius: 15px; padding: 25px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); transition: transform 0.3s; text-align: center;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
-                <img src="{{ asset('images/gedung_default.jpg') }}" alt="Foto Gedung" style="width: 100%; max-width: 180px; height: 120px; object-fit: cover; border-radius: 10px; margin-bottom: 15px;">
+                @php
+                    $mapping = [
+                        'gedung a' => 'Gedung_A.jpg',
+                        'gedung c' => 'Gedung_C.jpg',
+                        'gedung d/laboratorium' => 'Gedung_D.jpg',
+                        'e' => 'Gedung_E.jpg',
+                        'f' => 'Gedung_F.jpg',
+                        'aula f' => 'Gedung_F.jpg',
+                        'lapangan basket' => 'Gedung_C.jpg',
+                        'masjid teknik' => 'Mastek.jpg',
+                        'mastek' => 'Mastek.jpg',
+                        'majid teknik' => 'Mastek.jpg', // handle typo 'Majid Teknik'
+                    ];
+                    $nama = strtolower(trim($gedung->nama_gedung));
+                    $img = $mapping[$nama] ?? 'Gedung_A.jpg';
+                @endphp
+                <img src="{{ asset('images/gedung/' . $img) }}" alt="Foto Gedung" style="width: 100%; max-width: 180px; height: 120px; object-fit: cover; border-radius: 10px; margin-bottom: 15px;">
                 <h3 style="margin: 0 0 10px 0; color: #1e1e2d; font-size: 20px; font-weight: 600;">{{ $gedung->nama_gedung }}</h3>
                 <a href="{{ route('peminjam.ruangan.showGedung', $gedung->gedung_id) }}" style="display: inline-block; padding: 10px 20px; background-color: #3498db; color: white; text-decoration: none; border-radius: 8px; font-size: 14px; transition: background-color 0.3s; margin-top: 10px;" onmouseover="this.style.backgroundColor='#2980b9'" onmouseout="this.style.backgroundColor='#3498db'">
                     Lihat Ruangan

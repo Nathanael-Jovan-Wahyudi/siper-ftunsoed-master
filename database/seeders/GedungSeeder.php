@@ -21,7 +21,7 @@ class GedungSeeder extends Seeder
             ['nama_gedung' => 'F'],
             ['nama_gedung' => 'Aula F'],
             ['nama_gedung' => 'Lapangan Basket'],
-            ['nama_gedung' => 'Majid Teknik'],
+            ['nama_gedung' => 'Masjid Teknik'],
         ];
 
         Gedung::insert($gedungs);
