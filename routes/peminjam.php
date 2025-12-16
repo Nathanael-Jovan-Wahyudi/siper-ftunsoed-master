@@ -17,6 +17,7 @@ Route::middleware(['auth', 'role:peminjam'])->prefix('peminjam')->name('peminjam
     Route::post('/ajuan/step2/{peminjaman_id}', [PeminjamanController::class, 'storeStep2'])->name('ajuan.storeStep2');
     
     Route::get('/peminjaman/{peminjaman_id}', [PeminjamanController::class, 'show'])->name('peminjaman.detail');
+    Route::get('/peminjaman/{peminjaman_id}/bukti', [PeminjamanController::class, 'downloadBukti'])->name('peminjaman.bukti');
     
     Route::get('/ruangan', [RuanganController::class, 'index'])->name('ruangan.index');
     Route::get('/ruangan/gedung/{gedung_id}', [RuanganController::class, 'showGedung'])->name('ruangan.showGedung');

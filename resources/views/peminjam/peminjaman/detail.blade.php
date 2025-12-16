@@ -217,9 +217,14 @@
         </div>
     @endif
 
-    <div style="margin-top: 20px;">
+    <div style="margin-top: 20px; display: flex; gap: 16px; align-items: center;">
         <a href="{{ route('peminjam.dashboard') }}" class="btn-back">
             <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
         </a>
+        @if(in_array($peminjaman->status, ['disetujui subkoor', 'disetujui bapendik']))
+            <a href="{{ route('peminjam.peminjaman.bukti', $peminjaman->peminjaman_id) }}" class="btn-back" style="background-color: #3498db; color: #fff;">
+                <i class="fas fa-file-pdf"></i> Download Bukti PDF
+            </a>
+        @endif
     </div>
 </x-dashboard-layout>

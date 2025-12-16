@@ -120,6 +120,7 @@
                                 @else
                                     <span style="display: inline-block; padding: 4px 16px; border-radius: 8px; background: #e2e3e5; color: #383d41; font-weight: 600;">{{ ucfirst($peminjaman->status) }}</span>
                                 @endif
+                                <a href="{{ route('peminjam.peminjaman.detail', $peminjaman->peminjaman_id) }}" style="margin-left: 12px; color: #3498db; text-decoration: underline; font-weight: 500;">Lihat Detail</a>
                             </td>
                         </tr>
                     @empty

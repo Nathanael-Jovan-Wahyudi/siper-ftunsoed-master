@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Peminjam;
 
+
+use Barryvdh\DomPDF\Facade\Pdf;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\PeminjamanDetail;
@@ -13,6 +16,22 @@ use Carbon\Carbon;
 
 class PeminjamanController extends Controller
 {
+    // Download bukti peminjaman PDF
+    public function downloadBukti($peminjaman_id)
+    {
+        $peminjaman = Peminjaman::with(['ruangan.gedung', 'details', 'user'])
+            ->findOrFail($peminjaman_id);
+        // Cek ownership
+        if ($peminjaman->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized');
+        }
+        // Hanya jika sudah disetujui
+        if (!in_array($peminjaman->status, ['disetujui subkoor', 'disetujui bapendik'])) {
+            abort(403, 'Bukti hanya tersedia jika sudah disetujui.');
+        }
+        $pdf = Pdf::loadView('peminjam.peminjaman.bukti', compact('peminjaman'));
+        return $pdf->download('bukti_peminjaman_'.$peminjaman->peminjaman_id.'.pdf');
+    }
     // Step 1: Form ajuan utama
     public function create()
     {
